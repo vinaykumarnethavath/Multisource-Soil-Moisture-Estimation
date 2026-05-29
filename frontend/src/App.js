@@ -51,7 +51,7 @@ function App() {
     setLoading(true);
     setError(null);
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const API_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
       let url = `${API_URL}/api/search?date=${date}`;
       if (searchLat && searchLon) {
         url += `&lat=${searchLat}&lon=${searchLon}`;
@@ -91,7 +91,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const API_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
       const response = await axios.post(`${API_URL}/api/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
