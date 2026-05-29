@@ -1,17 +1,27 @@
-FROM python:3.10-slim
+# Stage 1: Build the React frontend
+FROM node:18 AS frontend-build
+WORKDIR /app/frontend
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm install
+COPY frontend/ ./
+# We set REACT_APP_API_URL to an empty string so the frontend calls relative paths (e.g., /api/search)
+RUN REACT_APP_API_URL="" npm run build
 
+# Stage 2: Serve with Python backend
+FROM python:3.10-slim
 WORKDIR /app
 
-# Copy the requirements file from the backend folder
+# Install backend dependencies
 COPY backend/requirements.txt .
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the backend application code
-COPY backend/ .
+# Copy backend files
+COPY backend/ ./
 
-# Expose the port Gunicorn will run on
+# Copy built frontend from Stage 1 into the backend container
+COPY --from=frontend-build /app/frontend/build ./frontend/build
+
+# Expose port
 EXPOSE 5000
 
 # Start the application using Gunicorn
