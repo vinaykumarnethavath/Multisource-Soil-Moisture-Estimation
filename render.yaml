@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: soil-moisture-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+
+  - type: static-site
+    name: soil-moisture-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishPath: build
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: soil-moisture-backend
+          envVarKey: RENDER_EXTERNAL_URL
