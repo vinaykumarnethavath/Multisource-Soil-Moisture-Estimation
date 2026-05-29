@@ -1,5 +1,6 @@
 node_modules/
-frontend/
+frontend/node_modules/
+frontend/build/
 .git/
 __pycache__/
 *.pyc
